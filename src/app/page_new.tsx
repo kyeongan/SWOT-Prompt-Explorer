@@ -3,33 +3,19 @@
 import { useState } from 'react';
 import { SelectionPanel } from '@/components/SelectionPanel';
 import { ResultsPanel } from '@/components/ResultsPanel';
-import { SegmentNetwork } from '@/components/SegmentNetwork';
-import { ComparisonDashboard } from '@/components/AdvancedComparisonDashboard';
-import { PersonaGrid } from '@/components/PersonaGrid';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Product, BusinessObjective, Segment, PromptType } from '@/types';
 import { PROMPT_TYPES } from '@/lib/constants';
 import { useSWOTAnalysis } from '@/hooks/useSWOTAnalysis';
-import { 
-  Zap, 
-  Loader2, 
-  RefreshCw, 
-  BarChart3, 
-  Network, 
-  Users, 
-  Grid3x3,
-  Eye
-} from 'lucide-react';
+import { Zap, Loader2, RefreshCw } from 'lucide-react';
 
 export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedObjective, setSelectedObjective] = useState<BusinessObjective | null>(null);
   const [selectedSegments, setSelectedSegments] = useState<Segment[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
 
   const { 
@@ -173,87 +159,15 @@ export default function Home() {
             )}
           </div>
 
-          {/* Results and Visualization Panel */}
+          {/* Results Panel */}
           <div className="lg:col-span-8">
-            <Tabs defaultValue="results" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="results" className="flex items-center gap-1">
-                  <Eye className="w-4 h-4" />
-                  <span className="hidden sm:inline">Results</span>
-                </TabsTrigger>
-                <TabsTrigger value="comparison" className="flex items-center gap-1">
-                  <BarChart3 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Compare</span>
-                </TabsTrigger>
-                <TabsTrigger value="network" className="flex items-center gap-1">
-                  <Network className="w-4 h-4" />
-                  <span className="hidden sm:inline">Network</span>
-                </TabsTrigger>
-                <TabsTrigger value="personas" className="flex items-center gap-1">
-                  <Users className="w-4 h-4" />
-                  <span className="hidden sm:inline">Personas</span>
-                </TabsTrigger>
-                <TabsTrigger value="grid" className="flex items-center gap-1">
-                  <Grid3x3 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Grid</span>
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="results" className="mt-6">
-                <ResultsPanel
-                  responses={responses}
-                  selectedSegments={selectedSegments}
-                  isGenerating={isGenerating}
-                  onGenerateInsight={handleGenerateInsight}
-                  getResponseByKeys={getResponseByKeys}
-                />
-              </TabsContent>
-
-              <TabsContent value="comparison" className="mt-6">
-                <ComparisonDashboard
-                  segments={selectedSegments}
-                  responses={responses}
-                  getResponseByKeys={getResponseByKeys}
-                  selectedUsers={selectedUsers}
-                  onUserSelectionChange={setSelectedUsers}
-                />
-              </TabsContent>
-
-              <TabsContent value="network" className="mt-6">
-                <SegmentNetwork
-                  segments={selectedSegments}
-                  responses={responses}
-                />
-              </TabsContent>
-
-              <TabsContent value="personas" className="mt-6">
-                <PersonaGrid
-                  segments={selectedSegments}
-                  responses={responses}
-                  getResponseByKeys={getResponseByKeys}
-                  onRegeneratePersona={(segment) => {
-                    const promptType = PROMPT_TYPES.find(pt => pt.id === 'buyer-persona');
-                    if (promptType) {
-                      handleGenerateInsight(segment, promptType);
-                    }
-                  }}
-                />
-              </TabsContent>
-
-              <TabsContent value="grid" className="mt-6">
-                <PersonaGrid
-                  segments={selectedSegments}
-                  responses={responses}
-                  getResponseByKeys={getResponseByKeys}
-                  onRegeneratePersona={(segment) => {
-                    const promptType = PROMPT_TYPES.find(pt => pt.id === 'buyer-persona');
-                    if (promptType) {
-                      handleGenerateInsight(segment, promptType);
-                    }
-                  }}
-                />
-              </TabsContent>
-            </Tabs>
+            <ResultsPanel
+              responses={responses}
+              selectedSegments={selectedSegments}
+              isGenerating={isGenerating}
+              onGenerateInsight={handleGenerateInsight}
+              getResponseByKeys={getResponseByKeys}
+            />
           </div>
         </div>
       </main>
