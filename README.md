@@ -2,6 +2,8 @@
 
 A live web application for generating strategic SWOT analysis insights across different customer segments using AI-powered prompts.
 
+**🔗 Live Demo:** https://swop-blond.vercel.app/
+
 ## Features
 
 - **Product & Objective Selection**: Choose from predefined products and business objectives
@@ -109,7 +111,9 @@ src/
 
 ## Deployment
 
-This app is designed for live deployment. Recommended platforms:
+This app is deployed live on Vercel: https://swop-blond.vercel.app/
+
+For your own deployment, recommended platforms:
 
 - **Vercel**: `npm run build && vercel --prod`
 - **Netlify**: `npm run build && netlify deploy --prod`
