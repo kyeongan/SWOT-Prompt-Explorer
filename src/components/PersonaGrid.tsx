@@ -62,11 +62,11 @@ export function PersonaGrid({ segments, responses, getResponseByKeys, onRegenera
     return personaData.map((data, index) => ({
       i: data.segment.id,
       x: (index % 3) * 4,
-      y: Math.floor(index / 3) * 6,
+      y: Math.floor(index / 3) * 8, // Increased spacing between rows
       w: 4,
-      h: 6,
+      h: 10, // Increased from 6 to 10 for more height
       minW: 3,
-      minH: 4,
+      minH: 8, // Increased from 4 to 8 for better minimum height
     }));
   };
 
@@ -127,14 +127,14 @@ export function PersonaGrid({ segments, responses, getResponseByKeys, onRegenera
         </div>
       </CardHeader>
       <CardContent>
-        <div className="min-h-[600px]">
+        <div className="min-h-[800px]"> {/* Increased from 600px to 800px */}
           <ResponsiveGridLayout
             className="layout"
             layouts={layouts}
             onLayoutChange={onLayoutChange}
             breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
             cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-            rowHeight={60}
+            rowHeight={120}
             isDraggable={isEditable}
             isResizable={isEditable}
             margin={[16, 16]}
@@ -149,11 +149,11 @@ export function PersonaGrid({ segments, responses, getResponseByKeys, onRegenera
                   transition={{ delay: index * 0.1 }}
                   className="h-full"
                 >
-                  <Card className="h-full flex flex-col">
-                    <CardHeader className="pb-3 flex-shrink-0">
+                  <Card className="h-full flex flex-col shadow-md hover:shadow-lg transition-shadow scale-100">
+                    <CardHeader className="pb-0 flex-shrink-0"> {/* Increased bottom padding */}
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm flex items-center gap-2">
-                          <User className="w-4 h-4" />
+                        <CardTitle className="text-base flex items-center gap-2 text-xs"> {/* Increased from text-sm to text-base */}
+                          <User className="" /> {/* Increased icon size */}
                           {data.segment.name}
                         </CardTitle>
                         <div className="flex items-center gap-1">
@@ -175,26 +175,27 @@ export function PersonaGrid({ segments, responses, getResponseByKeys, onRegenera
                           )}
                         </div>
                       </div>
-                      <CardDescription className="text-xs line-clamp-2">
+                      <CardDescription className="text-xs"> {/* Increased from text-xs and added margin */}
                         {data.segment.description}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1 overflow-hidden">
+                    <CardContent className="flex-1 overflow-hidden p-3">
                       {data.persona ? (
-                        <div className="h-full overflow-y-auto">
+                        <div className="h-full overflow-y-auto pr-2"> {/* Added right padding for scrollbar */}
                           <div className="prose prose-xs max-w-none">
                             <ReactMarkdown 
                               components={{
-                                p: ({ children }) => <p className="text-xs mb-2 leading-relaxed">{children}</p>,
-                                ul: ({ children }) => <ul className="text-xs mb-2 pl-3">{children}</ul>,
-                                li: ({ children }) => <li className="mb-1">{children}</li>,
-                                strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                                p: ({ children }) => <p className="text-sm mb-3 leading-relaxed">{children}</p>,
+                                ul: ({ children }) => <ul className="text-sm mb-3 pl-4">{children}</ul>,
+                                li: ({ children }) => <li className="mb-1.5">{children}</li>,
+                                strong: ({ children }) => <strong className="font-semibold text-gray-900 dark:text-gray-100">{children}</strong>,
+                                h3: ({ children }) => <h3 className="text-base font-semibold mb-2 mt-3">{children}</h3>,
                               }}
                             >
                               {data.persona.content}
                             </ReactMarkdown>
                           </div>
-                          <div className="mt-3 pt-2 border-t text-xs text-muted-foreground">
+                          <div className="mt-4 pt-3 border-t text-sm text-muted-foreground"> {/* Increased spacing and text size */}
                             <div className="flex items-center justify-between">
                               <span>{data.stats.totalInsights} insights</span>
                               <span>{new Date(data.persona.timestamp).toLocaleDateString()}</span>
@@ -202,10 +203,10 @@ export function PersonaGrid({ segments, responses, getResponseByKeys, onRegenera
                           </div>
                         </div>
                       ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground">
-                          <User className="w-8 h-8 mb-2 opacity-50" />
-                          <p className="text-xs">No persona generated</p>
-                          <p className="text-xs mt-1">Generate buyer persona insights</p>
+                        <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground p-4">
+                          <User className="w-12 h-12 mb-3 opacity-50" /> {/* Increased icon size */}
+                          <p className="text-sm font-medium">No persona generated</p> {/* Increased text size */}
+                          <p className="text-sm mt-2">Generate buyer persona insights to see detailed customer profiles</p> {/* Better description */}
                         </div>
                       )}
                     </CardContent>

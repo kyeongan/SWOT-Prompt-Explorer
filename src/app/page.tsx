@@ -4,16 +4,18 @@ import { useState } from 'react';
 import { SelectionPanel } from '@/components/SelectionPanel';
 import { ResultsPanel } from '@/components/ResultsPanel';
 import { SegmentNetwork } from '@/components/SegmentNetwork';
-import { ComparisonDashboard } from '@/components/AdvancedComparisonDashboard';
+import { ProfessionalDashboard } from '@/components/ProfessionalDashboard';
 import { PersonaGrid } from '@/components/PersonaGrid';
+import { RateLimitWarning, CostWarning } from '@/components/RateLimitWarning';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Product, BusinessObjective, Segment, PromptType } from '@/types';
 import { PROMPT_TYPES } from '@/lib/constants';
-import { useSWOTAnalysis } from '@/hooks/useSWOTAnalysis';
+import { useEnhancedSWOTAnalysis } from '@/hooks/useEnhancedSWOTAnalysis';
 import { 
   Zap, 
   Loader2, 
@@ -22,23 +24,28 @@ import {
   Network, 
   Users, 
   Grid3x3,
-  Eye
+  Eye,
+  AlertTriangle
 } from 'lucide-react';
 
 export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedObjective, setSelectedObjective] = useState<BusinessObjective | null>(null);
   const [selectedSegments, setSelectedSegments] = useState<Segment[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [isGeneratingAll, setIsGeneratingAll] = useState(false);
 
   const { 
     responses, 
     isGenerating, 
+    error,
+    remainingRequests,
+    totalRequests,
+    estimatedCost,
     generateInsight, 
-    clearResponses, 
+    clearResponses,
+    clearError,
     getResponseByKeys 
-  } = useSWOTAnalysis();
+  } = useEnhancedSWOTAnalysis();
 
   const handleSegmentToggle = (segment: Segment) => {
     setSelectedSegments(prev => {
@@ -110,6 +117,34 @@ export default function Home() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        {/* Rate Limiting and Cost Warnings */}
+        <div className="mb-6 space-y-3">
+          <RateLimitWarning 
+            isDemo={process.env.NEXT_PUBLIC_DEMO_MODE === 'true'} 
+            remainingRequests={remainingRequests}
+          />
+          <CostWarning 
+            totalRequests={totalRequests}
+            estimatedCost={estimatedCost}
+          />
+          {error && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription className="flex items-center justify-between">
+                {error}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={clearError}
+                  className="ml-2"
+                >
+                  Dismiss
+                </Button>
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
+
         <div className="grid gap-8 lg:grid-cols-12">
           {/* Selection Panel */}
           <div className="lg:col-span-4">
@@ -176,7 +211,7 @@ export default function Home() {
           {/* Results and Visualization Panel */}
           <div className="lg:col-span-8">
             <Tabs defaultValue="results" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="results" className="flex items-center gap-1">
                   <Eye className="w-4 h-4" />
                   <span className="hidden sm:inline">Results</span>
@@ -193,10 +228,6 @@ export default function Home() {
                   <Users className="w-4 h-4" />
                   <span className="hidden sm:inline">Personas</span>
                 </TabsTrigger>
-                <TabsTrigger value="grid" className="flex items-center gap-1">
-                  <Grid3x3 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Grid</span>
-                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="results" className="mt-6">
@@ -210,12 +241,9 @@ export default function Home() {
               </TabsContent>
 
               <TabsContent value="comparison" className="mt-6">
-                <ComparisonDashboard
+                <ProfessionalDashboard
                   segments={selectedSegments}
                   responses={responses}
-                  getResponseByKeys={getResponseByKeys}
-                  selectedUsers={selectedUsers}
-                  onUserSelectionChange={setSelectedUsers}
                 />
               </TabsContent>
 
@@ -240,19 +268,6 @@ export default function Home() {
                 />
               </TabsContent>
 
-              <TabsContent value="grid" className="mt-6">
-                <PersonaGrid
-                  segments={selectedSegments}
-                  responses={responses}
-                  getResponseByKeys={getResponseByKeys}
-                  onRegeneratePersona={(segment) => {
-                    const promptType = PROMPT_TYPES.find(pt => pt.id === 'buyer-persona');
-                    if (promptType) {
-                      handleGenerateInsight(segment, promptType);
-                    }
-                  }}
-                />
-              </TabsContent>
             </Tabs>
           </div>
         </div>
